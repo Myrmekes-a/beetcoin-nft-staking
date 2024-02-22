@@ -30,7 +30,8 @@ export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
   return (
     <div className="text-white capitalize flex items-center gap-2">
       <button
-        className="border py-2 px-4 rounded-lg text-center capitalize"
+        className="border py-2 px-2 lg:px-4 rounded-lg text-center capitalize text-xs lg:text-lg"
+        title="All NFTs"
         style={{
           color: tab === "all" ? "#fff" : "#ffffff80",
         }}
@@ -39,7 +40,8 @@ export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
         all({nfts.length})
       </button>
       <button
-        className="border py-2 px-4 rounded-lg text-center capitalize"
+        className="border py-2 px-2 lg:px-4 rounded-lg text-center capitalize text-xs lg:text-lg"
+        title="Unstaked NFTs"
         style={{
           color: tab === "unstaked" ? "#fff" : "#ffffff80",
         }}
@@ -48,7 +50,8 @@ export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
         unstaked ({nfts.filter((nft) => !nft.staked).length})
       </button>
       <button
-        className="border py-2 px-4 rounded-lg text-center capitalize"
+        className="border py-2 px-2 lg:px-4 rounded-lg text-center capitalize text-xs lg:text-lg"
+        title="Staked NFTs"
         style={{
           color: tab === "staked" ? "#fff" : "#ffffff80",
         }}

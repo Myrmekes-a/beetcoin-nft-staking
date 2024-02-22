@@ -36,10 +36,10 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen backdrop-blur-lg">
-      <div className="max-w-[1200px] mx-auto">
+      <div className="max-w-[calc(100%-32px)] xl:max-w-[1200px] mx-4 xl:mx-auto pb-20">
         <Header />
         <section className="relative z-30">
-          <h1 className="text-4xl text-white text-center font-bold">
+          <h1 className="text-xl xl:text-4xl text-white text-center font-bold">
             Stake your NFTs
           </h1>
           {!(connected && publicKey) ? (
@@ -51,7 +51,7 @@ export default function Home() {
           ) : (
             <>
               {loading ? (
-                <div className="grid grid-cols-4 gap-4 mt-20">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-20">
                   {Array.from({ length: 4 }).map((_, key) => (
                     <div
                       className="animate-pulse bg-slate-600 aspect-square rounded-md"
@@ -64,7 +64,7 @@ export default function Home() {
                   {nfts.length !== 0 ? (
                     <div className="mt-10">
                       <Tabs nfts={nfts} tab={tab} setTab={setTab} />
-                      <div className="grid grid-cols-4 gap-4 mt-10">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
                         {nftVisible.map(
                           (nft, index) => (
                               <NftCard {...nft} key={`${index}-${nft.mint}`} />
