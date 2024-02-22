@@ -19,4 +19,7 @@ export type Nft = {
   editionNonce: number;
   masterEdition?: string | undefined;
   edition?: string | undefined;
+  staked: boolean;
+  stakedAt: number;
+  owner: string;
 };

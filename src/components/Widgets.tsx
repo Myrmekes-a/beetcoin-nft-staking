@@ -1,4 +1,9 @@
+"use client";
+
+import { Nft } from "@/utils/type";
+import { useWallet } from "@solana/wallet-adapter-react";
 import Image from "next/image";
+import { Dispatch, FC, SetStateAction } from "react";
 
 export const Background = () => {
   return (
@@ -12,5 +17,45 @@ export const Background = () => {
         alt=""
       />
     </>
+  );
+};
+
+interface TabsProps {
+  nfts: Nft[];
+  tab: "staked" | "unstaked" | "all";
+  setTab: Dispatch<SetStateAction<"staked" | "unstaked" | "all">>;
+}
+
+export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
+  return (
+    <div className="text-white capitalize flex items-center gap-2">
+      <button
+        className="border py-2 px-4 rounded-lg text-center capitalize"
+        style={{
+          color: tab === "all" ? "#fff" : "#ffffff80",
+        }}
+        onClick={() => setTab("all")}
+      >
+        all({nfts.length})
+      </button>
+      <button
+        className="border py-2 px-4 rounded-lg text-center capitalize"
+        style={{
+          color: tab === "unstaked" ? "#fff" : "#ffffff80",
+        }}
+        onClick={() => setTab("unstaked")}
+      >
+        unstaked ({nfts.filter((nft) => !nft.staked).length})
+      </button>
+      <button
+        className="border py-2 px-4 rounded-lg text-center capitalize"
+        style={{
+          color: tab === "staked" ? "#fff" : "#ffffff80",
+        }}
+        onClick={() => setTab("staked")}
+      >
+        staked ({nfts.filter((nft) => nft.staked).length})
+      </button>
+    </div>
   );
 };

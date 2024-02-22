@@ -1,15 +1,38 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Header from "@/components/Header";
 import NftCard from "@/components/NftCard";
-import { Background } from "@/components/Widgets";
+import { Background, Tabs } from "@/components/Widgets";
 import useNfts from "@/hooks/useNfts";
 import { useWallet } from "@solana/wallet-adapter-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { publicKey, connected } = useWallet();
-  const { nfts, loading } = useNfts(publicKey, connected);
+
+  const { nfts, loading, fetchNfts } = useNfts(publicKey);
+  const [tab, setTab] = useState<"all" | "staked" | "unstaked">("all");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchNfts();
+      } catch (error) {
+        console.error("Error fetching NFTs:", error);
+      }
+    };
+
+    fetchData();
+  }, [publicKey]);
+
+  const nftVisible =
+    tab === "all"
+      ? nfts
+      : tab === "unstaked"
+      ? nfts.filter((nft) => !nft.staked)
+      : nfts.filter((nft) => nft.staked);
 
   return (
     <main className="relative min-h-screen backdrop-blur-lg">
@@ -39,10 +62,15 @@ export default function Home() {
               ) : (
                 <>
                   {nfts.length !== 0 ? (
-                    <div className="grid grid-cols-4 gap-4 mt-20">
-                      {nfts.map((nft, index) => (
-                        <NftCard {...nft} key={`${index}-${nft.mint}`} />
-                      ))}
+                    <div className="mt-10">
+                      <Tabs nfts={nfts} tab={tab} setTab={setTab} />
+                      <div className="grid grid-cols-4 gap-4 mt-10">
+                        {nftVisible.map(
+                          (nft, index) => (
+                              <NftCard {...nft} key={`${index}-${nft.mint}`} />
+                            )
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <div className="text-white text-center px-20 py-6 mt-20 text-2xl bg-purple-700/20 rounded-lg">
