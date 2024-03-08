@@ -194,7 +194,6 @@ const NftCard: FC<CardProps> = ({ refetch, nft }) => {
         }
         setLoading(false);
       } finally {
-        refetch();
         setLoading(false);
         setProcessText("");
       }
@@ -270,7 +269,6 @@ const NftCard: FC<CardProps> = ({ refetch, nft }) => {
         toast.error("Something went wrong");
       }
     } finally {
-      refetch();
       setLoading(false);
     }
   };
