@@ -65,11 +65,13 @@ export default function Home() {
                     <div className="mt-10">
                       <Tabs nfts={nfts} tab={tab} setTab={setTab} />
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
-                        {nftVisible.map(
-                          (nft, index) => (
-                              <NftCard {...nft} key={`${index}-${nft.mint}`} />
-                            )
-                        )}
+                        {nftVisible.map((nft, index) => (
+                          <NftCard
+                            key={`${index}-${nft.mint}`}
+                            nft={nft}
+                            refetch={async () => await fetchNfts()}
+                          />
+                        ))}
                       </div>
                     </div>
                   ) : (

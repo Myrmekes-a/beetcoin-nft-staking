@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { Nft } from "@/utils/type";
 import { getParsedNftAccountsByOwner } from "@nfteyez/sol-rayz";
-import { CREATOR_ADDRESS, SOLANA_RPC } from "@/config";
-import { solConnection } from "@/utils/util";
+import { CREATOR_ADDRESS } from "@/config";
+import { getDelegateStatus, solConnection } from "@/utils/util";
+import { minerPoolStatus } from "@/lib/apis";
 
 const useNfts = (address: PublicKey | null, connected?: boolean) => {
   const [nfts, setNfts] = useState<Nft[]>([]);
@@ -55,6 +56,13 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
           // Parse the metadata JSON
           const metadata = await metadataRes.json();
 
+          let staked = false;
+          if (address) {
+            staked = await getDelegateStatus(account.mint, address);
+          }
+
+          const stakedInfo = await minerPoolStatus(account.mint);
+
           // Construct the NFT object
           const nft: Nft = {
             mint: account.mint,
@@ -75,8 +83,10 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
             editionNonce: account.editionNonce,
             masterEdition: account.masterEdition,
             edition: account.edition,
-            staked: false,
-            stakedAt: new Date().getTime(),
+            staked: staked,
+            stakedAt: stakedInfo.timestamp
+              ? new Date(stakedInfo.timestamp).getTime()
+              : 0,
             owner: publicKey ?? "",
           };
 
@@ -96,13 +106,18 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
       return;
     }
   };
+
   useEffect(() => {
-    if (publicKey && connected) {
-      fetchNfts();
-    } else {
-      setNfts([]);
-      setLoading(false);
-    }
+    const fetchData = async () => {
+      if (publicKey && connected) {
+        await fetchNfts();
+      } else {
+        setNfts([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [address, connected, publicKey]);
 
   return { nfts, error, loading, fetchNfts };
