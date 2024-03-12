@@ -1,32 +1,32 @@
+import { BASE_URL } from "@/config";
+import { PoolStatus } from "@/utils/type";
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "";
-
 export const poolMiner = async (
-  nftAddress: string,
+  nftAddresses: string[],
   ownerAddress: string,
   signature: string
 ) => {
   try {
-    const response = await axios.post(`${baseURL}/poolMiner`, {
-      nftAddress,
+    const response = await axios.post(`${BASE_URL}/poolMiner`, {
+      nftAddresses,
       ownerAddress,
       signature,
     });
-    return response.data;
+  return response.data;
   } catch (error: any) {
     throw new Error(error.response.data.message);
   }
 };
 
 export const withdrawMinerFromPool = async (
-  nftAddress: string,
+  nftAddresses: string[],
   ownerAddress: string,
   signature: string
 ) => {
   try {
-    const response = await axios.post(`${baseURL}/withdrawMinerFromPool`, {
-      nftAddress,
+    const response = await axios.post(`${BASE_URL}/withdrawMinerFromPool`, {
+      nftAddresses,
       ownerAddress,
       signature,
     });
@@ -36,10 +36,12 @@ export const withdrawMinerFromPool = async (
   }
 };
 
-export const minerPoolStatus = async (nftAddress: string) => {
+export const minerPoolStatus = async (
+  nftAddresses: string[]
+): Promise<PoolStatus[]> => {
   try {
-    const response = await axios.post(`${baseURL}/minerPoolStatus`, {
-      nftAddress,
+    const response = await axios.post(`${BASE_URL}/minerPoolStatus`, {
+      nftAddresses: nftAddresses,
     });
     return response.data;
   } catch (error: any) {

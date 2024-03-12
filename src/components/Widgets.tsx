@@ -28,7 +28,7 @@ interface TabsProps {
 export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
   return (
     <div className="text-white capitalize flex items-center gap-2">
-      <button
+      {/* <button
         className="border border-white/30 py-2 px-2 lg:px-4 rounded-lg text-center capitalize text-xs lg:text-lg"
         title="All NFTs"
         style={{
@@ -37,7 +37,7 @@ export const Tabs: FC<TabsProps> = ({ nfts, tab, setTab }) => {
         onClick={() => setTab("all")}
       >
         all({nfts.length})
-      </button>
+      </button> */}
       <button
         className="border border-white/30 py-2 px-2 lg:px-4 rounded-lg text-center capitalize text-xs lg:text-lg"
         title="Unstaked NFTs"

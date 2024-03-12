@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.info-box {
+    padding: 20px 40px;
+    border-radius: 16px;
+}
+
+.loading-pice {
+    background-color: #ffffff80;
+    height: 20px;
+    width: 40px;
+}
+
+.loading-pice1 {
+    background-color: #ffffff80;
+    height: 16px;
+    width: 64px;
+}

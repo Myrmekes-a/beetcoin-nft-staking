@@ -22,7 +22,7 @@ interface PageProviderProps {
 }
 
 export function PageProvider({ children }: PageProviderProps) {
- 
+  
   const pageContextValue: PageContextType = {
     solPrice: 101,
   };

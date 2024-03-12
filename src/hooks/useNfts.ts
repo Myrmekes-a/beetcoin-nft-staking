@@ -61,8 +61,6 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
             staked = await getDelegateStatus(account.mint, address);
           }
 
-          const stakedInfo = await minerPoolStatus(account.mint);
-
           // Construct the NFT object
           const nft: Nft = {
             mint: account.mint,
@@ -83,10 +81,8 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
             editionNonce: account.editionNonce,
             masterEdition: account.masterEdition,
             edition: account.edition,
-            staked: staked,
-            stakedAt: stakedInfo.timestamp
-              ? new Date(stakedInfo.timestamp).getTime()
-              : 0,
+            staked: false,
+            stakedAt: 0,
             owner: publicKey ?? "",
           };
 
@@ -95,9 +91,32 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
         })
       );
 
-      setNfts(fullData);
+      const stakedData = await minerPoolStatus(
+        fullData.map((item) => item.mint)
+      );
+
+      const newArray: Nft[] = [];
+
+      for (let nft of fullData) {
+        const matched = stakedData.find((item) => item.nftAddress === nft.mint);
+        newArray.push({
+          ...nft,
+          staked: matched?.isPooled || false, // Default to false if isPooled is undefined
+          stakedAt: matched?.timestamp
+            ? new Date(matched.timestamp).getTime()
+            : 0,
+        });
+      }
+
+      setNfts(
+        newArray.sort(
+          (a, b) =>
+            parseInt(a.data.name.split("#")[1]) -
+            parseInt(b.data.name.split("#")[1])
+        )
+      );
       setLoading(false);
-      return fullData;
+      return newArray;
     } catch (error: any) {
       // Log any errors that occur during the process
       console.log(error);

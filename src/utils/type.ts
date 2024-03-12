@@ -23,3 +23,9 @@ export type Nft = {
   stakedAt: number;
   owner: string;
 };
+
+export type PoolStatus = {
+  nftAddress: string;
+  isPooled: boolean;
+  timestamp?: string;
+};
