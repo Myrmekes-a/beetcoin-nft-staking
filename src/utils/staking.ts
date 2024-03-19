@@ -5,10 +5,10 @@ import bs58 from "bs58";
 import {
   BEETCOIN_ADDRESS,
   BEETWALLT,
-  FROZEN_RANGE,
   SOLANA_RPC,
   STAKING_COST_BEET,
   STAKING_COST_SOL,
+  UNSTAKING_COST_SOL,
 } from "@/config";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
@@ -206,43 +206,128 @@ export const unstake = async ({
       .use(walletAdapterIdentity(wallet));
 
     setProcessText("Unfreezing...");
-    const resApi = await withdrawMinerFromPool(
-      mints,
-      wallet.publicKey?.toBase58() as string,
-      "signature"
-    );
+    const tokenMintAddress = new PublicKey(BEETCOIN_ADDRESS);
+    const destinationAddress = new PublicKey(BEETWALLT);
+    const transferTx = transactionBuilder();
+    if (signer) {
+      const sourceTokenAccountAddress = await getAssociatedTokenAddress(
+        tokenMintAddress,
+        signer,
+        true,
+        TOKEN_2022_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
 
-    console.log(resApi);
-    setProcessText("Revoking...");
-    setProcessText("Updating server...");
-    if (signer !== null) {
-      let multiUnStakeTx = transactionBuilder();
-      // const multiUnStakeTx = new TransactionBuilder();
-      for (let mint of mints) {
-        const nftMint = publicKey(mint);
-        const tokenOwner = publicKey(signer);
+      const destinationTokenAccountAddress = await getAssociatedTokenAddress(
+        tokenMintAddress,
+        destinationAddress,
+        true,
+        TOKEN_2022_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      );
 
-        const res = revokeStandardV1(umi, {
-          mint: nftMint,
-          tokenOwner,
-          delegate: publicKey(BEETWALLT),
-          tokenStandard: TokenStandard.NonFungible,
-        });
+      const basisPoints = 4;
+      const feesAmount =
+        (STAKING_COST_BEET * mints.length * basisPoints) / 10000;
+      const feesAmountBigInt = BigInt(feesAmount);
+      const bigIntAmount = BigInt(STAKING_COST_BEET * mints.length);
 
-        multiUnStakeTx = multiUnStakeTx.add(res);
-      }
+      const tokenPaymentInstruction = createTransferCheckedWithFeeInstruction(
+        sourceTokenAccountAddress,
+        tokenMintAddress,
+        destinationTokenAccountAddress,
+        signer,
+        bigIntAmount,
+        9,
+        feesAmountBigInt
+      );
 
-      const sigRes = await multiUnStakeTx.sendAndConfirm(umi);
+      const costIx: WrappedInstruction = {
+        instruction: {
+          data: tokenPaymentInstruction.data,
+          keys: tokenPaymentInstruction.keys.map((key) => {
+            return {
+              ...key,
+              pubkey: publicKey(key.pubkey),
+            };
+          }),
+          programId: publicKey(tokenPaymentInstruction.programId),
+        },
+        signers: [],
+        bytesCreatedOnChain: 0,
+      };
 
+      const solPaymentInstruction = SystemProgram.transfer({
+        fromPubkey: signer,
+        toPubkey: destinationAddress,
+        lamports: UNSTAKING_COST_SOL * mints.length,
+      });
+
+      const solCostIx: WrappedInstruction = {
+        instruction: {
+          data: solPaymentInstruction.data,
+          keys: solPaymentInstruction.keys.map((key) => {
+            return {
+              ...key,
+              pubkey: publicKey(key.pubkey),
+            };
+          }),
+          programId: publicKey(solPaymentInstruction.programId),
+        },
+        signers: [],
+        bytesCreatedOnChain: 0,
+      };
+      const sigRes = await transferTx
+        .add(setComputeUnitLimit(umi, { units: 1_500_000 }))
+        .add(setComputeUnitPrice(umi, { microLamports: 250_000 }))
+        .add(costIx)
+        .add(solCostIx)
+        .sendAndConfirm(umi);
       const signature = bs58.encode(sigRes.signature);
-      console.log("unstake signature", signature);
+      console.log("stake signature", signature);
 
-      setProcessText("");
-
-      refetch();
-      setLoading(false);
-      toast.success("Miner unfrozen successfully");
+      const resApi = await withdrawMinerFromPool(
+        mints,
+        wallet.publicKey?.toBase58() as string,
+        signature
+      );
+      console.log(resApi);
     }
+
+    // setProcessText("Revoking...");
+    // setProcessText("Updating server...");
+
+    refetch();
+    setLoading(false);
+    toast.success("Successfully");
+    // if (signer !== null) {
+    //   let multiUnStakeTx = transactionBuilder();
+    //   // const multiUnStakeTx = new TransactionBuilder();
+    //   for (let mint of mints) {
+    //     const nftMint = publicKey(mint);
+    //     const tokenOwner = publicKey(signer);
+
+    //     const res = revokeStandardV1(umi, {
+    //       mint: nftMint,
+    //       tokenOwner,
+    //       delegate: publicKey(BEETWALLT),
+    //       tokenStandard: TokenStandard.NonFungible,
+    //     });
+
+    //     multiUnStakeTx = multiUnStakeTx.add(res);
+    //   }
+
+    //   const sigRes = await multiUnStakeTx.sendAndConfirm(umi);
+
+    //   const signature = bs58.encode(sigRes.signature);
+    //   console.log("unstake signature", signature);
+
+    //   setProcessText("");
+
+    //   refetch();
+    //   setLoading(false);
+    //   toast.success("Successfully");
+    // }
   } catch (error) {
     console.log(error);
     if (JSON.stringify(error).indexOf("4001") === -1) {

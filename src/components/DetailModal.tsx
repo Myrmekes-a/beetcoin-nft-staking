@@ -15,7 +15,16 @@ interface Detail {
 }
 
 const DetailModal: FC<Detail> = ({ nft, refetch }) => {
-  const { mint, image, data, description, attributes, staked, stakedAt } = nft;
+  const {
+    mint,
+    image,
+    data,
+    description,
+    attributes,
+    staked,
+    stakedAt,
+    status,
+  } = nft;
   const wallet = useWallet();
   const { closeModal } = useModal();
   const [loading, setLoading] = useState(false);
@@ -119,10 +128,10 @@ const DetailModal: FC<Detail> = ({ nft, refetch }) => {
               <button
                 className="uppercase border-2 font-bold bg-gray-800/60 border-white text-white py-2 px-8 hover:bg-gray-800 duration-200 disabled:opacity-60 w-[200px] h-12 disabled:pointer-events-none"
                 onClick={handleUnstake}
-                disabled={loading}
+                disabled={loading || status !== "frozen"}
               >
                 {!loading ? (
-                  <>Unstake</>
+                  <>{status !== "frozen" ? "Unfreezing..." : "Unstake"}</>
                 ) : (
                   <Spinner className="w-7 h-7 text-white animate-spin fill-pink-600 mx-auto" />
                 )}

@@ -13,9 +13,10 @@ export const BEETWALLT = process.env.NEXT_PUBLIC_BEET_ADDRESS ?? "";
 export const BEETCOIN_ADDRESS = "4v5nbBSUyLQdHV3yFg4W1fMGPbbsbZDG54urSyCsbEtY";
 
 // export const STAKING_COST_BEET = 2_000_000_000;
-export const STAKING_COST_BEET = LAMPORTS_PER_SOL * 2 * 0.01;
+export const STAKING_COST_BEET = LAMPORTS_PER_SOL * 2;
 // export const STAKING_COST_SOL = 2_000_000;
-export const STAKING_COST_SOL = LAMPORTS_PER_SOL * 0.02 * 0.01;
+export const STAKING_COST_SOL = LAMPORTS_PER_SOL * 0.02;
+export const UNSTAKING_COST_SOL = LAMPORTS_PER_SOL * 0.0042;
 
 export const FROZEN_RANGE = 24 * 60 * 60 * 1000;
 

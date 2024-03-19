@@ -40,12 +40,14 @@ export default function Home() {
   const handleSelect = (nft: Nft) => {
     let sel = [...selected];
     const index = sel.findIndex((s) => s.mint === nft.mint);
-    if (index !== -1 || sel.length === MAX_SELECTABLE) {
-      // If the NFT is already selected, remove it
-      sel.splice(index, 1);
-    } else {
-      // If the NFT is not selected, add it to the selection
-      sel.push(nft);
+    if (!(nft.staked && nft.status !== "frozen")) {
+      if (index !== -1 || sel.length === MAX_SELECTABLE) {
+        // If the NFT is already selected, remove it
+        sel.splice(index, 1);
+      } else {
+        // If the NFT is not selected, add it to the selection
+        sel.push(nft);
+      }
     }
     setSelected(sel);
   };
@@ -146,7 +148,7 @@ export default function Home() {
                           </div>
                         )}
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
                         {tab === "staked" &&
                           stakedNfts.map((nft, index) => (
                             <NftCard

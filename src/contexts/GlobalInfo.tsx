@@ -7,7 +7,7 @@ const GlobalInfo: FC = () => {
   const { isLoading, detail, status } = usePoolGlobalStatus();
 
   return (
-    <div className="rounded-2xl bg-white/10 p-10 text-white relative z-20 flex items-around justify-between info-box">
+    <div className="rounded-2xl bg-white/10 p-5 lg:p-10 text-white relative z-20 flex items-around justify-between info-box">
       {isLoading ? (
         Array.from({ length: 4 }).map((_, key) => (
           <div

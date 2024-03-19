@@ -13,7 +13,7 @@ export const poolMiner = async (
       ownerAddress,
       signature,
     });
-  return response.data;
+    return response.data;
   } catch (error: any) {
     throw new Error(error.response.data.message);
   }

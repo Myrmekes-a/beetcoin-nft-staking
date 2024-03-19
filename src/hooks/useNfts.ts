@@ -37,7 +37,7 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
       await Promise.all(
         nftAccounts.map(async (account) => {
           // Check if the NFT is verified and the creator address matches the specified address
-          const creatorMatch = account.data.creators.find(
+          const creatorMatch = account.data?.creators?.find(
             (creator) =>
               creator.verified === 1 && creator.address === CREATOR_ADDRESS
           );
@@ -83,6 +83,7 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
             edition: account.edition,
             staked: false,
             stakedAt: 0,
+            status: "",
             owner: publicKey ?? "",
           };
 
@@ -95,6 +96,8 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
         fullData.map((item) => item.mint)
       );
 
+      console.log("staked data", stakedData);
+
       const newArray: Nft[] = [];
 
       for (let nft of fullData) {
@@ -105,6 +108,7 @@ const useNfts = (address: PublicKey | null, connected?: boolean) => {
           stakedAt: matched?.timestamp
             ? new Date(matched.timestamp).getTime()
             : 0,
+          status: matched?.status ? matched.status : "",
         });
       }
 

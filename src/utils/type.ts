@@ -18,14 +18,16 @@ export type Nft = {
   isMutable: boolean;
   editionNonce: number;
   masterEdition?: string | undefined;
-  edition?: string | undefined;
   staked: boolean;
   stakedAt: number;
   owner: string;
+  status: string;
+  edition?: string | undefined;
 };
 
 export type PoolStatus = {
   nftAddress: string;
   isPooled: boolean;
+  status?: string;
   timestamp?: string;
 };

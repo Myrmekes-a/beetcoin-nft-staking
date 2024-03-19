@@ -20,7 +20,7 @@ interface CardProps {
 }
 
 const NftCard: FC<CardProps> = ({ refetch, nft, selected, select }) => {
-  const { staked, mint, image, stakedAt, data, attributes } = nft;
+  const { staked, mint, image, stakedAt, data, attributes, status } = nft;
 
   const { openModal } = useModal();
 
@@ -32,7 +32,13 @@ const NftCard: FC<CardProps> = ({ refetch, nft, selected, select }) => {
   const [processText, setProcessText] = useState("");
 
   const handleStake = async () => {
-    await stake({ wallet, mints: [mint], setLoading, setProcessText, refetch });
+    await stake({
+      wallet,
+      mints: [mint],
+      setLoading,
+      setProcessText,
+      refetch,
+    });
   };
 
   const handleUnstake = async () => {
@@ -91,9 +97,9 @@ const NftCard: FC<CardProps> = ({ refetch, nft, selected, select }) => {
           <button
             className="uppercase border-2 font-bold bg-gray-800/60 border-white text-white py-1 px-8 hover:bg-gray-800 duration-200 disabled:opacity-30 disabled:cursor-no-drop w-[calc(100%-30px)]"
             onClick={handleUnstake}
-            disabled={loading || selected.length !== 0}
+            disabled={loading || selected.length !== 0 || status !== "frozen"}
           >
-            Unstake
+            {status !== "frozen" ? "Unfreezing..." : "Unstake"}
           </button>
         )}
         <button onClick={onDetail} title="NFT Detail">
@@ -104,9 +110,7 @@ const NftCard: FC<CardProps> = ({ refetch, nft, selected, select }) => {
         <div className="absolute left-0 top-0 bg-white/10 w-full h-full z-20 backdrop-blur-sm flex flex-col items-center justify-center opacity-100 duration-200">
           <Spinner />
           {processText !== "" && (
-            <p className="text-white text-center">
-              {processText}
-            </p>
+            <p className="text-white text-center">{processText}</p>
           )}
         </div>
       )}
